@@ -4,8 +4,31 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
+import sqlite3
 
+class DistrictsPipeline(object):
+    def __init__(self):
+        self.items = []
 
-class TutorialPipeline(object):
     def process_item(self, item, spider):
+        self.items.append(item)
+        if len(self.items) >= 128:
+            self.insert_current_items()
         return item
+
+    def insert_current_items(self):
+        items = self.items
+        self.items = []
+        with sqlite3.connect("/home/zoin/workspace/RealEstateAdvisor/realEstate.sqlite") as db:
+            cursor = db.cursor()
+            names = [(it['name'],) for it in items]
+            try:
+                cursor.executemany('''INSERT OR REPLACE INTO Districts(Name)
+                                      VALUES(?)''', names)
+            except sqlite3.IntegrityError:
+                db.rollback()
+            else:
+                db.commit()
+
+    def close_spider(self, spider):
+        self.insert_current_items()

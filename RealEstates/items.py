@@ -8,5 +8,5 @@
 import scrapy
 
 
-class DistrictsItem(scrapy.Item):
-    name = scrapy.Field()
+#class DistrictsItem(scrapy.Item):
+ #   name = scrapy.Field()
