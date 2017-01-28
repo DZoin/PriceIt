@@ -8,5 +8,7 @@
 import scrapy
 
 
-#class DistrictsItem(scrapy.Item):
- #   name = scrapy.Field()
+class EstatesItem(scrapy.Item):
+    district = scrapy.Field()
+    area = scrapy.Field()
+    price = scrapy.Field()
