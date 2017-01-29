@@ -5,6 +5,7 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import sqlite3
+import logging
 
 class DistrictsPipeline(object):
     def __init__(self):
@@ -51,7 +52,7 @@ class EstatesPipeline(object):
             inData = [(estate['price'], estate['area'], estate['district']) for estate in estates]
             try:
                 cursor.executemany('''INSERT OR REPLACE INTO RealEstates(Price, Area, District)
-                                      VALUES(?,?,(SELECT id from RealEstateType WHERE name='?'))''', inData)
+                                      VALUES(?,?,(SELECT ID from Districts WHERE Name LIKE ? COLLATE NOCASE))''', inData)
             except sqlite3.IntegrityError:
                 db.rollback()
             else:

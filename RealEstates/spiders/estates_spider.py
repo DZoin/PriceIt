@@ -3,6 +3,7 @@ import sys
 sys.path.append('/home/zoin/workspace/RealEstateAdvisor/RealEstates')
 from items import EstatesItem
 import re
+import logging
 
 class RealEstateAdvisorSpider(scrapy.Spider):
     name = "estatesSpider"
@@ -12,8 +13,8 @@ class RealEstateAdvisorSpider(scrapy.Spider):
 	}
     }
     def start_requests(self):
-        for count in (1, 2):
-            yield scrapy.Request('http://www.imoti.com/pcgi/results.cgi?page=%d&searchres=01ezf991&pn=1&sort=1&nraion=43&curr=2' % count, callback=self.parse_inner)
+        for count in (1, 1000):
+            yield scrapy.Request('http://www.imoti.com/pcgi/results.cgi?page={}&searchres=01ezf991&pn=1&sort=1&nraion=43&curr=2'.format(count), callback=self.parse)
         
     def parse(self, response):
         for next_url in response.xpath('/html/body/div[3]/div[3]/div[1]/div/child::node()/a/@href').extract():
@@ -30,9 +31,9 @@ class RealEstateAdvisorSpider(scrapy.Spider):
             return
         else:
             price = re.sub(r"\D", "", priceString.encode('utf-8'))
-            price = re.sub(r"\D", "", areaString.encode('utf-8'))
+            area = re.sub(r"\D", "", areaString.encode('utf-8'))
             titleTokens = title.split(", ")
-            estate['district'] = titleTokens[1].encode('utf-8')
-            estate['area'] = area
-            estate['price'] = price
+            estate['district'] = titleTokens[1]
+            estate['area'] = area.decode('utf-8')
+            estate['price'] = price.decode('utf-8')
             yield estate
