@@ -50,7 +50,10 @@ class EstatesPipeline(object):
         with sqlite3.connect("/home/zoin/workspace/RealEstateAdvisor/realEstate.sqlite") as db:
             cursor = db.cursor()
             inData = [(estate['price'], estate['area'], estate['district']) for estate in estates]
+            districts = [(estate['district'],) for estate in estates]
             try:
+                cursor.executemany('''INSERT OR REPLACE INTO Districts(Name)
+                                      VALUES(?)''', districts)
                 cursor.executemany('''INSERT OR REPLACE INTO RealEstates(Price, Area, District)
                                       VALUES(?,?,(SELECT ID from Districts WHERE Name LIKE ? COLLATE NOCASE))''', inData)
             except sqlite3.IntegrityError:

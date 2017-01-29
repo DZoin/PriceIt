@@ -13,8 +13,8 @@ class RealEstateAdvisorSpider(scrapy.Spider):
 	}
     }
     def start_requests(self):
-        for count in (1, 1000):
-            yield scrapy.Request('http://www.imoti.com/pcgi/results.cgi?page={}&searchres=01ezf991&pn=1&sort=1&nraion=43&curr=2'.format(count), callback=self.parse)
+        for count in range(1, 250):
+            yield scrapy.Request('http://www.imoti.com/pcgi/results.cgi?page={0}&searchres=01ezf991&pn=1&sort=1&nraion=43&curr=2'.format(count), callback=self.parse)
         
     def parse(self, response):
         for next_url in response.xpath('/html/body/div[3]/div[3]/div[1]/div/child::node()/a/@href').extract():
